@@ -11,7 +11,7 @@ function getDb()
     return $db;
   } catch (PDOException $e) {
     header('Content-Type: text/plain; charset=UTF-8', true, 500);
-    exit($e->getMessage()); 
+    exit($e->getMessage());
   } finally {
     $db = null;
   }
