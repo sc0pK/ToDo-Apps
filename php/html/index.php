@@ -18,10 +18,11 @@ $db = getDb();
                 <th>作成日</th>
             </tr>
         </thead>
+        <form action="delete.php" method="post">
         <tbody>
         <?
             // SELECT文を変数に格納
-            $sql = "SELECT * FROM ToDo";
+            $sql = "SELECT * FROM ToDo WHERE date IS NOT NULL";
             // SQLステートメントを実行し、結果を変数に格納
             $stmt = $db->query($sql);
             // foreach文で配列の中身を一行ずつ出力
@@ -30,11 +31,12 @@ $db = getDb();
                 print "<tr>";
                 print "<td>{$row['content']}</td>";
                 print "<td>{$row['add_date']}</td>";
-                print "<td><button value='{$row['id']}'>削除</button></td>";
+                print "<td><button type='submit' name='del' value='{$row['id']}'>削除</button></td>";
                 print "</tr>";
             }
         ?>
         </tbody>
+        </form>
     </table>
     <br>
     <form action="update.php" method="post">

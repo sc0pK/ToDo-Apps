@@ -5,8 +5,7 @@ services:
     container_name: php
     image: php:7.4-apache
     build:
-      context: /docker/php
-      dockerfile: Dockerfile
+      context: ./docker/php
     volumes:
       - ./php.ini:/usr/local/etc/php/php.ini
       - ./html:/var/www/html
