@@ -1,6 +1,6 @@
 <?php
 if(isset($_POST['content'])){
-    require_once 'db.php';
+    require_once '../api/db.php';
     $db = getDb();
     $content = $_POST['content'];
     $date = date("Y-m-d H:i:s");
@@ -13,4 +13,5 @@ if(isset($_POST['content'])){
     $uri = $_SERVER['HTTP_REFERER'];
     header("Location: ".$uri);
 }
+header( "Location: ../index.php" );
 ?>
