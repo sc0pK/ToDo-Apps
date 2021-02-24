@@ -1,89 +1,71 @@
+<?php
+require_once '../../api/function.php';
+require_unlogined_session();
+
+// ユーザから受け取ったユーザ名とパスワード
+$username = h(filter_input(INPUT_POST, 'username'));
+$password = h(filter_input(INPUT_POST, 'password'));
+// POSTメソッドのときのみ実行
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    try {
+        // データベースへの接続開始
+        $db = getDb();
+        // bindParamを利用したSQL文の実行
+        $sql = 'SELECT * FROM USR WHERE userid = :id;';
+        $sth = $db->prepare($sql);
+        $sth->bindParam(':id', $username);
+        $sth->execute();
+        $result = $sth->fetch();
+        //認証処理
+        if (
+            validate_token(filter_input(INPUT_POST, 'token')) &&
+            password_verify($password, $result['pwHash'])
+        ) {
+            // 認証が成功したとき
+            // セッションIDの追跡を防ぐ
+            session_regenerate_id(true);
+            // ユーザ名をセット
+            $_SESSION['username'] = $username;
+            // ログイン完了後に / に遷移
+            header('Location: /');
+            exit();
+        } else {
+            // 認証が失敗したとき
+            // 「403 Forbidden」
+            http_response_code(403);
+        }
+        // データベースへの接続に失敗した場合
+    } catch (PDOException $e) {
+        print '接続失敗:' . $e->getMessage();
+        die();
+    }
+}
+?>
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>ログイン</title>
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-<style>
-body {
-	color: #fff;
-	background: #2980b9;
-}
-.form-control {
-	min-height: 41px;
-	background: #f2f2f2;
-	box-shadow: none !important;
-	border: transparent;
-}
-.form-control:focus {
-	background: #e2e2e2;
-}
-.form-control, .btn {
-	border-radius: 2px;
-}
-.login-form {
-	width: 450px;
-	margin: 200px auto;
-	text-align: center;
-}
-.login-form h2 {
-	margin: 10px 0 25px;
-}
-.login-form form {
-	color: #7a7a7a;
-	border-radius: 3px;
-	margin-bottom: 15px;
-	background: #fff;
-	box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
-	padding: 30px;
-}
-.login-form .btn {
-	font-size: 16px;
-	font-weight: bold;
-	background: #e74c3c;
-	border: none;
-	outline: none !important;
-}
-.login-form .btn:hover, .login-form .btn:focus {
-	background: #c0392b
-	;
-}
-.login-form a {
-	color: #fff;
-	text-decoration: underline;
-}
-.login-form a:hover {
-	text-decoration: none;
-}
-.login-form form a {
-	color: #7a7a7a;
-	text-decoration: none;
-}
-.login-form form a:hover {
-	text-decoration: underline;
-}
-</style>
-</head>
+<html lang="ja">
+  <?php
+  define('title', 'ログイン');
+  include '../../global_menu.php';
+  ?>
 <body>
 <div class="login-form">
-    <form action="../../actions/user.php" method="post">
+    <form action="" method="post">
         <h2 class="text-center">ログイン</h2>
+		<?php if (http_response_code() === 403): ?>
+			<p style="color: red;">ユーザIDまたはパスワードが違います</p>
+		<?php endif; ?>
         <div class="form-group has-error">
-        	<input type="text" class="form-control" name="username" placeholder="ユーザーID" required="required">
+        	<input type="text" class="form-control" name="username" placeholder="ユーザID" required="required">
         </div>
 		<div class="form-group">
             <input type="password" class="form-control" name="password" placeholder="パスワード" required="required">
         </div>
+		<input type="hidden" name="token" value="<?= h(generate_token()) ?>">
         <div class="form-group">
             <button type="submit" class="btn btn-primary btn-lg btn-block">サインイン</button>
         </div>
     </form>
-	<p>アカウントをお持ちですか？<a href="sign-up.php">登録する</a></p>
+	<p>アカウントをお持ちでないですか？ <a href="../sign-up">登録する</a></p>
 </div>
 </body>
 </html>

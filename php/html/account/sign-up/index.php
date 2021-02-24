@@ -1,79 +1,50 @@
+<?php
+require_once '../../api/function.php';
+
+require_unlogined_session();
+
+// POSTメソッドのときのみ実行
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (
+        isset($_POST['userid']) &&
+        isset($_POST['password']) &&
+        isset($_POST['name'])
+    ) {
+        try {
+            $db = getDb();
+            $userid = h($_POST['userid']);
+            $pass = h($_POST['password']);
+            $name = h($_POST['name']);
+            $sql =
+                'INSERT INTO USR (userid, pwHash, name) VALUES (:userid, :pwHash, :name)';
+            $prepare = $db->prepare($sql);
+            $prepare->bindValue(':userid', $userid, PDO::PARAM_STR);
+            $prepare->bindValue(
+                ':pwHash',
+                password_hash($pass, PASSWORD_DEFAULT)
+            );
+            $prepare->bindValue(':name', $name);
+            $prepare->execute();
+            header('Location: /account/login');
+        } catch (PDOException $e) {
+            $errmsg = 'アカウントが既に存在がします。';
+        }
+    }
+}
+?>
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>サインアップ</title>
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-<style>
-body {
-	color: #fff;
-	background: #c0392b;
-}
-.form-control {
-	min-height: 41px;
-	background: #f2f2f2;
-	box-shadow: none !important;
-	border: transparent;
-}
-.form-control:focus {
-	background: #e2e2e2;
-}
-.form-control, .btn {
-	border-radius: 2px;
-}
-.login-form {
-	width: 450px;
-	margin: 200px auto;
-	text-align: center;
-}
-.login-form h2 {
-	margin: 10px 0 25px;
-}
-.login-form form {
-	color: #7a7a7a;
-	border-radius: 3px;
-	margin-bottom: 15px;
-	background: #fff;
-	box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
-	padding: 30px;
-}
-.login-form .btn {
-	font-size: 16px;
-	font-weight: bold;
-	background: #3598dc;
-	border: none;
-	outline: none !important;
-}
-.login-form .btn:hover, .login-form .btn:focus {
-	background: #2389cd;
-}
-.login-form a {
-	color: #fff;
-	text-decoration: underline;
-}
-.login-form a:hover {
-	text-decoration: none;
-}
-.login-form form a {
-	color: #7a7a7a;
-	text-decoration: none;
-}
-.login-form form a:hover {
-	text-decoration: underline;
-}
-</style>
-</head>
+<html lang="ja">
+  <?php
+  define('title', 'ログイン');
+  include '../../global_menu.php';
+  ?>
 <body>
 <div class="login-form">
-    <form action="../../actions/createUser.php" method="post">
+    <form action="" method="post">
         <h2 class="text-center">アカウント作成</h2>
+		<? echo "<p class='errmsg'>{$errmsg}</p>" ?>
         <div class="form-group has-error">
-        	<input type="text" class="form-control" name="userid" placeholder="ユーザーID" required="required">
+        	<input type="text" class="form-control" name="userid" placeholder="ユーザID" required="required">
         </div>
 		<div class="form-group">
             <input type="password" class="form-control" name="password" placeholder="パスワード" required="required">
@@ -85,7 +56,7 @@ body {
             <button type="submit" class="btn btn-primary btn-lg btn-block">登録する</button>
         </div>
     </form>
-	<p>アカウントをお持ちですか？<a href="login.php">ログインする</a></p>
+	<p>アカウントをお持ちですか？ <a href="../login">ログインする</a></p>
 </div>
 </body>
 </html>
