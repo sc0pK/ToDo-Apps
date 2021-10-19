@@ -1,13 +1,13 @@
 require('./bootstrap');
 
-import ExampleComponent from './components/ExampleComponent.vue';
+import TodoView from './components/TodoView.vue';
 import Create from './components/Create.vue';
 
 import { createApp } from 'vue';
 
 const app = createApp({
     components: {
-        ExampleComponent,
+        TodoView,
         Create,
     }
 }).mount('#app');

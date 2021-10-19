@@ -25,6 +25,12 @@ class TodoController extends Controller
             "created_at" => Carbon::now(),
         ]);
         $create->save();
+        return redirect("/");
+    }
+    public function get()
+    {
+        $todos = Todo::all();
+        return view("view", compact("todos"));
     }
     //
 }
