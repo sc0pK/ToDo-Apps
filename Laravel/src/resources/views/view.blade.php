@@ -8,7 +8,7 @@
     </head>
     <body>
         <div id="app">
-            <todo-view :todos="{{json_encode($todos)}}"></todo-view>
+            <todo-view :csrf="{{json_encode(csrf_token())}}" :todos="{{json_encode($todos)}}"></todo-view>
         </div>
         <script src="{{ mix('js/app.js') }}"></script> 
     </body>

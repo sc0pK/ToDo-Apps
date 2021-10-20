@@ -29,8 +29,12 @@ class TodoController extends Controller
     }
     public function get()
     {
-        $todos = Todo::all();
+        $todos = Todo::whereNotNull("updated_at")->get();
         return view("view", compact("todos"));
+    }
+    public function done(Request $req)
+    {
+        Todo::where("id", $req->id)->update(["updated_at" => null]);
     }
     //
 }

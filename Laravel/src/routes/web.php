@@ -19,3 +19,5 @@ Route::get("/home", "HomeController@index")->name("home");
 
 Route::get("/create", "TodoController@create")->name("create");
 Route::post("/create", "TodoController@add")->name("create");
+
+Route::post("/done", "TodoController@done")->name("view");
