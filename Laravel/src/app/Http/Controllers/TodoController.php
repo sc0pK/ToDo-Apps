@@ -36,5 +36,8 @@ class TodoController extends Controller
     {
         Todo::where("id", $req->id)->update(["updated_at" => null]);
     }
-    //
+    public function delete(Request $req)
+    {
+        Todo::where("id", $req->id)->delete();
+    }
 }

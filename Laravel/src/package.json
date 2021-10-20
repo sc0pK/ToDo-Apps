@@ -26,6 +26,7 @@
     },
     "dependencies": {
         "glob": "^7.2.0",
+        "mosha-vue-toastify": "^1.0.23",
         "webpack": "^5.57.1",
         "webpack-cli": "^4.9.0"
     }
